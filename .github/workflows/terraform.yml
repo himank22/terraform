@@ -6,6 +6,15 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      confirm_apply:
+        description: "Type yes to create the EC2 instance"
+        required: true
+        type: choice
+        options:
+          - "no"
+          - "yes"
+        default: "no"
 
 permissions:
   contents: read
@@ -49,3 +58,6 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -input=false -no-color
+      - name: Apply Terraform
+        if: github.event_name == 'workflow_dispatch' && inputs.confirm_apply == 'yes'
+        run: terraform apply -input=false -auto-approve
