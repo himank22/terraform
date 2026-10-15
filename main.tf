@@ -122,7 +122,7 @@ resource "aws_route_table_association" "public" {
 
 resource "aws_security_group" "web" {
   name        = "${var.project_name}-sg"
-  description = "SSH restricted to the user's IP; optional public HTTP"
+  description = "SSH access and optional HTTP"
   vpc_id      = aws_vpc.main.id
 
   tags = {
