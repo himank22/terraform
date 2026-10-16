@@ -51,6 +51,7 @@ variable "my_ip_cidr" {
 variable "KEY_NAME" {
   description = "Existing EC2 key pair name"
   type        = string
+  default     = "himank"
 }
 
 variable "instance_type" {
