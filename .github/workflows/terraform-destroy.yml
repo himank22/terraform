@@ -1,0 +1,61 @@
+
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: "Type yes to destroy all Terraform-managed lab resources"
+        required: true
+        type: choice
+        options:
+          - "no"
+          - "yes"
+        default: "no"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-aws-lab
+  cancel-in-progress: false
+
+jobs:
+  destroy:
+    name: Review and Destroy Infrastructure
+    if: inputs.confirm_destroy == 'yes'
+    runs-on: ubuntu-latest
+
+    env:
+      TF_VAR_my_ip_cidr: ${{ secrets.TF_VAR_MY_IP_CIDR }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.5"
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::230235764463:role/GitHubActionsTerraformRole
+          aws-region: ap-south-1
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Initialize Terraform remote state
+        run: terraform init -input=false
+
+      - name: Show tracked resources
+        run: terraform state list
+
+      - name: Create destroy plan
+        run: terraform plan -destroy -input=false -no-color -out=destroy.tfplan
+
+      - name: Destroy infrastructure
+        run: terraform apply -input=false -auto-approve destroy.tfplan
