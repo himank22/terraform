@@ -59,7 +59,7 @@ jobs:
       - name: Terraform Plan
         env:
          TF_VAR_my_ip_cidr: ${{ secrets.TF_VAR_MY_IP_CIDR }}
-         TF_VAR_key_name: ${{ secrets.TF_VAR_key_name }}
+         TF_VAR_key_name: ${{ secrets.TF_VAR_KEY_NAME }}
         run: terraform plan -input=false -no-color
       - name: Apply Terraform
         if: github.event_name == 'workflow_dispatch' && inputs.confirm_apply == 'yes'
