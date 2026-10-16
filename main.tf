@@ -48,7 +48,7 @@ variable "my_ip_cidr" {
   }
 }
 
-variable "key_name" {
+variable "KEY_NAME" {
   description = "Existing EC2 key pair name"
   type        = string
 }
