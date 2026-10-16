@@ -21,9 +21,9 @@ provider "aws" {
   region = var.aws_region
 }
 
-# ----------------------------
-# Variables
-# ----------------------------
+
+                                                                                                             # Variables
+
 
 variable "aws_region" {
   description = "AWS region where infrastructure will be created."
@@ -38,8 +38,9 @@ variable "project_name" {
 }
 
 variable "my_ip_cidr" {
-  description = "Your public IPv4 CIDR for SSH, e.g. 203.0.113.10/32. Replace before apply."
+  description = "Your public IPv4 CIDR for SSH"
   type        = string
+  # default     = "0.0.0.0/0"
 
   validation {
     condition     = can(cidrnetmask(var.my_ip_cidr)) && endswith(var.my_ip_cidr, "/32")
@@ -54,7 +55,7 @@ variable "instance_type" {
 }
 
 variable "ami_id" {
-  description = "Amazon Linux 2023 AMI ID in the selected region. Verify this AMI before deployment."
+  description = "Amazon Linux 2023 AMI ID in the selected region."
   type        = string
   default     = "ami-0cdfc1e40cc5ca08a"
 }
@@ -65,9 +66,9 @@ variable "allow_http" {
   default     = true
 }
 
-# ----------------------------
-# Networking: new VPC + public subnet
-# ----------------------------
+
+                                                                                                           # Networking: new VPC + public subnet
+
 
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
@@ -116,9 +117,10 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# ----------------------------
-# Security group + explicit rules
-# ----------------------------
+
+
+                                                                                                        # Security group + explicit rules
+
 
 resource "aws_security_group" "web" {
   name        = "${var.project_name}-sg"
@@ -156,9 +158,9 @@ resource "aws_vpc_security_group_egress_rule" "all_ipv4" {
   ip_protocol       = "-1"
 }
 
-# ----------------------------
-# EC2 instance in the new VPC subnet
-# ----------------------------
+
+                                                                                     # EC2 instance in the new VPC subnet
+
 
 resource "aws_instance" "my_server" {
   ami                         = var.ami_id
@@ -185,9 +187,9 @@ resource "aws_instance" "my_server" {
   depends_on = [aws_route_table_association.public]
 }
 
-# ----------------------------
-# Outputs
-# ----------------------------
+                                                                                              # ----------------------------
+                                                                                              # Outputs
+                                                                                              # ----------------------------
 
 output "vpc_id" {
   description = "ID of the new VPC."
